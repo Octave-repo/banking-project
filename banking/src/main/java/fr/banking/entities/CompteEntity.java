@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -28,11 +25,13 @@ public class CompteEntity {
     private String intituleCompte;
     private TypeCompte typeCompte;
 
-    @ManyToMany
+    @OneToMany
     List<ClientEntity> clients;
 
     @OneToMany
     List<CarteEntity> cartes;
     @NotBlank
     private Date dateCreation;
+    @OneToMany
+    private List<TransactionEntity> transactions;
 }

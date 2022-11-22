@@ -9,9 +9,9 @@ import javax.persistence.Entity;
 
 @Getter
 @Setter
-@Entity
+//@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class VirementEntity extends TransactionEntity{
+public class VirementEntity{
     private CompteEntity receveur;
 }

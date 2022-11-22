@@ -2,10 +2,7 @@ package fr.banking.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
@@ -21,7 +18,7 @@ public class TransactionEntity {
 
     @NotBlank
     private String raison;
-    @OneToMany
+    @ManyToOne
     private CompteEntity emetteur;
     private double valeur;
 
