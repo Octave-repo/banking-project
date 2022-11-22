@@ -32,4 +32,15 @@ public class ClientEntity {
     @NotBlank
     private Date dateCreation;
     private Date dateModification;
+
+    public ClientEntity (String nom,String prenom,Date date,String tel,String adresse ){
+        this.nom=nom;
+        this.prenom=prenom;
+        dateNaissance=date;
+        telephone=tel;
+        this.adresse=adresse;
+        dateCreation=new Date(System.currentTimeMillis());
+    }
+
+
 }
