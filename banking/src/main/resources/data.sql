@@ -1,0 +1,2 @@
+INSERT INTO client_entity (id, adresse, date_creation, date_modification, date_naissance, nom, prenom, telephone)
+VALUES (0, 'Oui', DATE('26-04-2001', "DD-MM-YY"), DATE('26-04-2001', "DD-MM-YY"), DATE('26-04-2001', "DD-MM-YY"), 'Octave', 'Valadier', '+334000');
