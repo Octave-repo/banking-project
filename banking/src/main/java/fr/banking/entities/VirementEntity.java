@@ -1,5 +1,6 @@
 package fr.banking.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import javax.persistence.Entity;
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class VirementEntity extends TransactionEntity{
     private CompteEntity receveur;
 }
