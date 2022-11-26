@@ -1,11 +1,16 @@
 package fr.banking.services;
 
+import fr.banking.entities.CompteEntity;
+import fr.banking.services.dto.compte.PostCompteRequest;
+import fr.banking.services.dto.compte.PostCompteResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import fr.banking.repository.CompteRepository;
 import fr.banking.services.dto.compte.GetCompteResponses;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.lang.String.valueOf;
 
 public class CompteService {
     @Autowired
@@ -35,4 +40,6 @@ public class CompteService {
                                         .build()).collect(Collectors.toList()))
                         .build()).collect(Collectors.toList());
     }
+
+
 }

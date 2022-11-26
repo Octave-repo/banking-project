@@ -10,10 +10,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostCompteRequest {
+public class PostCompteResponses {
     private String intituleCompte;
     private TypeCompte typeCompte;
     private List<GetCompteResponses.GetCompteClientResponses> titulairesCompte;
+    private String iBAN;
+    private double solde;
 
     @Getter
     @Setter
