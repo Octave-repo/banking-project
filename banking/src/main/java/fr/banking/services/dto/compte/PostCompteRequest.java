@@ -1,5 +1,6 @@
 package fr.banking.services.dto.compte;
 
+import fr.banking.entities.ClientEntity;
 import fr.banking.entities.TypeCompte;
 import lombok.*;
 
@@ -13,14 +14,14 @@ import java.util.List;
 public class PostCompteRequest {
     private String intituleCompte;
     private TypeCompte typeCompte;
-    private List<GetCompteResponses.GetCompteClientResponses> titulairesCompte;
+    private List<GetCompteClientRequest> idTitulairesCompte;
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class GetCompteClientResponses {
-        private long id;
+    public static class GetCompteClientRequest {
+        private Long id;
     }
 }

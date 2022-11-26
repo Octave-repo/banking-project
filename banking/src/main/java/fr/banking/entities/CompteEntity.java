@@ -1,11 +1,11 @@
 package fr.banking.entities;
 
+import fr.banking.services.dto.compte.GetCompteResponses;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,4 +32,6 @@ public class CompteEntity {
     private Date dateCreation;
     @OneToMany
     private List<TransactionEntity> transactions;
+
+
 }
