@@ -1,12 +1,10 @@
 package fr.banking.entities;
 
-import fr.banking.services.dto.compte.GetCompteResponses;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -18,20 +16,19 @@ import java.util.List;
 public class CompteEntity {
     @Id
     private String iBAN;
-    @NotBlank
     private double solde;
     private String intituleCompte;
     private TypeCompte typeCompte;
 
     @OneToMany
+    @JoinColumn
     List<ClientEntity> clients;
 
     @OneToMany
+    @JoinColumn
     List<CarteEntity> cartes;
-    @NotBlank
-    private Date dateCreation;
+    private Timestamp dateCreation;
     @OneToMany
+    @JoinColumn
     private List<TransactionEntity> transactions;
-
-
 }

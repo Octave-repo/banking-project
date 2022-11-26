@@ -1,9 +1,9 @@
 package fr.banking.services.dto.compte;
 
-import fr.banking.entities.ClientEntity;
 import fr.banking.entities.TypeCompte;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,7 +14,7 @@ import java.util.List;
 public class PostCompteRequest {
     private String intituleCompte;
     private TypeCompte typeCompte;
-    private List<GetCompteClientRequest> idTitulairesCompte;
+    private List<GetCompteClientRequest> titulairesCompte;
 
     @Getter
     @Setter
@@ -22,6 +22,14 @@ public class PostCompteRequest {
     @NoArgsConstructor
     @Builder
     public static class GetCompteClientRequest {
-        private Long id;
+        private Long idClient;
+    }
+
+    public List<Long> getAllId(){
+        ArrayList<Long> out = new ArrayList<>();
+        for(GetCompteClientRequest client : titulairesCompte){
+            out.add(client.getIdClient());
+        }
+        return out;
     }
 }

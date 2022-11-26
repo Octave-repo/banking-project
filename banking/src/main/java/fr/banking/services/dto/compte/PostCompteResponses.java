@@ -23,6 +23,6 @@ public class PostCompteResponses {
     @NoArgsConstructor
     @Builder
     public static class GetCompteClientResponses {
-        private long id;
+        private long idClient;
     }
 }

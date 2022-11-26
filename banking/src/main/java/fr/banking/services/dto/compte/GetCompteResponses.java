@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class GetCompteResponses {
-    private String iBAN;
+    private String Iban;
     private double solde;
     private String intituleCompte;
     private TypeCompte typeCompte;
@@ -26,7 +26,7 @@ public class GetCompteResponses {
     @NoArgsConstructor
     @Builder
     public static class GetCompteClientResponses {
-        private long id;
+        private long idClient;
     }
 
     @Getter

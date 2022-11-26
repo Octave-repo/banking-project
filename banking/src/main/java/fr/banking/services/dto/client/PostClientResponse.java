@@ -10,12 +10,12 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Builder
-public class GetClientResponse {
+public class PostClientResponse {
     private long id;
     private String nom;
     private String prenom;
     private Timestamp dateNaissance;
     private String telephone;
-    private String adresse;
+    private String adressePostale;
     private Timestamp dateCreation;
 }

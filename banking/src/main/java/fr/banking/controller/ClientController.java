@@ -1,18 +1,17 @@
 package fr.banking.controller;
 
 import fr.banking.services.ClientService;
+import fr.banking.services.dto.client.PostClientRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpServerErrorException;
 
 @RestController
 @RequestMapping("clients")
 public class ClientController {
+
     @Autowired
     private ClientService clientService;
 
@@ -26,5 +25,10 @@ public class ClientController {
         else{
             return ResponseEntity.ok().body(this.clientService.getClientByNameAndLastName(nom, prenom));
         }
+    }
+
+    @PostMapping
+    private ResponseEntity createClient(@RequestBody PostClientRequest postClientRequest){
+        return ResponseEntity.created(null).body(this.clientService.createClient(postClientRequest));
     }
 }

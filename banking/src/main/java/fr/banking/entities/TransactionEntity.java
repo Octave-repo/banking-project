@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class TransactionEntity {
     private TypeTransaction typeTransaction;
     private TypeSource typeSource;
     @NotBlank
-    private Date date;
+    private Timestamp date;
     @NotBlank
-    private Date dateCreation;
+    private Timestamp dateCreation;
 }
