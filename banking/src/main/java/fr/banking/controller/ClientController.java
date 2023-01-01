@@ -2,6 +2,7 @@ package fr.banking.controller;
 
 import fr.banking.services.ClientService;
 import fr.banking.services.dto.client.PostClientRequest;
+import fr.banking.services.dto.client.PutClientRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,10 @@ public class ClientController {
     @PostMapping
     private ResponseEntity createClient(@RequestBody PostClientRequest postClientRequest){
         return ResponseEntity.created(null).body(this.clientService.createClient(postClientRequest));
+    }
+
+    @PutMapping
+    private ResponseEntity updateClient(@RequestBody PutClientRequest putClientRequest){
+        return ResponseEntity.created(null).body(this.clientService.updateClient(putClientRequest));
     }
 }

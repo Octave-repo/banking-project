@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.lang.String.valueOf;
 @Service
 public class CompteService {
     private static final AtomicLong atom = new AtomicLong();
