@@ -3,13 +3,11 @@ package fr.banking.services;
 import fr.banking.entities.CarteEntity;
 import fr.banking.entities.ClientEntity;
 import fr.banking.entities.CompteEntity;
+import fr.banking.repository.CarteRepository;
 import fr.banking.repository.ClientRepository;
-import fr.banking.services.dto.compte.GetCardResponse;
-import fr.banking.services.dto.compte.PostCompteRequest;
-import fr.banking.services.dto.compte.PostCompteResponses;
+import fr.banking.services.dto.compte.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import fr.banking.repository.CompteRepository;
-import fr.banking.services.dto.compte.GetCompteResponses;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +23,8 @@ public class CompteService {
     private CompteRepository compteRepository;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private CarteRepository carteRepository;
 
     public List<GetCompteResponses> getCompte (Long id){
         return this.compteRepository.findCompteEntityByClientsId(id)
@@ -114,4 +114,24 @@ public class CompteService {
                 .build();
     }
 
+    public PostCardResponse createCarte(String iban, PostCardRequest postCardRequest) {
+        CompteEntity compte = compteRepository.findCompteEntityByiBAN(iban);
+        CarteEntity carte = CarteEntity.builder()
+                .moisExpiration("12")
+                .anneeExpiration("2026")
+                .password(postCardRequest.getCode())
+                .compte(compte)
+                .build();
+        carteRepository.save(carte);
+        compte.getCartes().add(carte);
+        compteRepository.save(compte);
+        return buildPostCard(carte);
+    }
+    private PostCardResponse buildPostCard (CarteEntity carte){
+        return PostCardResponse.builder()
+                .numeroCarte(carte.getCardNumber().toString())
+                .dateExpiration(carte.getExpirationDate())
+                .titulaireCarte(carte.getCompte().getIBAN())
+                .build();
+    }
 }

@@ -2,10 +2,7 @@ package fr.banking.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
@@ -17,12 +14,12 @@ import java.util.Date;
 @Builder
 public class CarteEntity {
     @Id
-    private String cardNumber;
+    @GeneratedValue
+    private Long cardNumber;
 
     @ManyToOne
     private CompteEntity compte;
-    @NotBlank
-    private String password;
+    private int password;
     @NotBlank
     private String moisExpiration;
     @NotBlank
