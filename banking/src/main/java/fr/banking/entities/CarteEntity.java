@@ -28,4 +28,7 @@ public class CarteEntity {
     @NotBlank
     private String anneeExpiration;
 
+    public String getExpirationDate(){
+        return moisExpiration + "/" + anneeExpiration;
+    }
 }

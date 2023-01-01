@@ -17,13 +17,12 @@ public class CompteController {
     private CompteService compteService;
 
     @GetMapping
-    private ResponseEntity getCompte(@RequestParam("identifiantClient") long identifiantClient){
-        if(identifiantClient == -1 ) {
+    private ResponseEntity getCompte(@RequestParam("identifiantClient") long identifiantClient) {
+        if (identifiantClient == -1) {
             return ResponseEntity
                     .badRequest()
                     .body(new HttpServerErrorException(HttpStatus.NOT_IMPLEMENTED)); //Temporaire à changer plus tard
-        }
-        else{
+        } else {
             return ResponseEntity.ok().body(this.compteService.getCompte(identifiantClient));
         }
     }
@@ -33,4 +32,8 @@ public class CompteController {
         return ResponseEntity.created(null).body(this.compteService.postCompte(request));
     }
 
+    @GetMapping("/{iban}/cartes")
+    private ResponseEntity getCartes(@PathVariable String iban) {
+        return ResponseEntity.created(null).body(this.compteService.getCartes(iban));
+    }
 }

@@ -1,8 +1,10 @@
 package fr.banking.services;
 
+import fr.banking.entities.CarteEntity;
 import fr.banking.entities.ClientEntity;
 import fr.banking.entities.CompteEntity;
 import fr.banking.repository.ClientRepository;
+import fr.banking.services.dto.compte.GetCardResponse;
 import fr.banking.services.dto.compte.PostCompteRequest;
 import fr.banking.services.dto.compte.PostCompteResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +89,20 @@ public class CompteService {
             listId.add(new GetCompteResponses.GetCompteClientResponses(c.getId()));
         }
         return listId;
+    }
+
+    public List<GetCardResponse> getCartes(String iban) {
+        List<GetCardResponse> listCard=new ArrayList<>();
+        for (CarteEntity c:compteRepository.findCompteEntityByiBAN(iban).getCartes()){
+            listCard.add(GetCardResponse.builder()
+                    .numeroCarte(c.getCardNumber())
+                    .dateExpiration(c.getExpirationDate())
+                            .titulaireCarte(GetCardResponse.Titulaire.builder()
+                                    .idClient(c.getCompte().getIBAN())
+                                    .build())
+                    .build());
+        }
+        return listCard;
     }
     private PostCompteResponses buildPostCompte (CompteEntity compte){
         return PostCompteResponses.builder()

@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CompteRepository extends JpaRepository<CompteEntity,String> {
     List<CompteEntity> findCompteEntityByClientsId(long id);
+
+    CompteEntity findCompteEntityByiBAN(String iban);
 }
