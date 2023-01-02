@@ -1,6 +1,8 @@
 package fr.banking.entities;
 
+import fr.banking.generator.CardNumberGenerator;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -14,8 +16,9 @@ import java.util.Date;
 @Builder
 public class CarteEntity {
     @Id
-    @GeneratedValue
-    private Long cardNumber;
+    @GeneratedValue(generator = CardNumberGenerator.NAME)
+    @GenericGenerator(name = CardNumberGenerator.NAME, strategy = "fr.banking.generator.CardNumberGenerator")
+    private String cardNumber;
 
     @ManyToOne
     private CompteEntity compte;

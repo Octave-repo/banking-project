@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class GetCardResponse {
-    Long numeroCarte;
+    String numeroCarte;
     String dateExpiration;
     Titulaire titulaireCarte;
 
