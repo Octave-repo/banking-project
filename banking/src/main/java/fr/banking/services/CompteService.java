@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fr.banking.repository.CompteRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -116,9 +117,13 @@ public class CompteService {
 
     public PostCardResponse createCarte(String iban, PostCardRequest postCardRequest) {
         CompteEntity compte = compteRepository.findCompteEntityByiBAN(iban);
+        LocalDateTime now = LocalDateTime.now();
         CarteEntity carte = CarteEntity.builder()
-                .moisExpiration("12")
-                .anneeExpiration("2026")
+                //On génère le numéro de carte basé sur le moment de la création
+                //On ajoute un 0 devant si le mois est inférieur à 10
+                .moisExpiration((now.getMonthValue() >= 10 ? "" : "0") + now.getMonthValue())
+                //On enlève les deux premiers chiffres de l'année
+                .anneeExpiration(String.valueOf(now.getYear() + 3).substring(2))
                 .password(postCardRequest.getCode())
                 .compte(compte)
                 .build();
@@ -129,7 +134,7 @@ public class CompteService {
     }
     private PostCardResponse buildPostCard (CarteEntity carte){
         return PostCardResponse.builder()
-                .numeroCarte(carte.getCardNumber().toString())
+                .numeroCarte(carte.getCardNumber())
                 .dateExpiration(carte.getExpirationDate())
                 .titulaireCarte(carte.getCompte().getIBAN())
                 .build();
