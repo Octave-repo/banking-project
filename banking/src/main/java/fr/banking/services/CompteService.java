@@ -58,10 +58,10 @@ public class CompteService {
     private String createIban(){
         StringBuilder iban = new StringBuilder();
         Long nCompte = atom.getAndIncrement()+ 10000000000L;
-        iban.append("FR76 ");
-        iban.append("30003 ");
-        iban.append("02054 ");
-        iban.append(nCompte).append(" ");
+        iban.append("FR76");
+        iban.append("30003");
+        iban.append("02054");
+        iban.append(nCompte);
         iban.append(97 -  (( 89 * 30003  +15 * 2054 + 3 * nCompte) % 97 ));
         return iban.toString();
     }
