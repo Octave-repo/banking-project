@@ -4,7 +4,9 @@ import fr.banking.entities.ClientEntity;
 import fr.banking.repository.ClientRepository;
 import fr.banking.services.dto.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -55,16 +57,17 @@ public class ClientService {
     }
 
     public PutClientResponse updateClient(PutClientRequest putClientRequest){
-        ClientEntity clientSave = this.clientRepository.save(
-                ClientEntity.builder().id(putClientRequest.getId())
-                        .nom(putClientRequest.getNom())
-                        .prenom(putClientRequest.getPrenom())
-                        .dateNaissance(putClientRequest.getDateNaissance())
-                        .adresse(putClientRequest.getAdressePostale())
-                        .telephone(putClientRequest.getTelephone())
-                        .build());
-
-        return buildPutClientResponse(clientSave);
+        ClientEntity client = this.clientRepository.findClientEntityById(putClientRequest.getId());
+        if (client == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found");
+        }
+        client.setNom(putClientRequest.getNom());
+        client.setPrenom(putClientRequest.getPrenom());
+        client.setDateNaissance(putClientRequest.getDateNaissance());
+        client.setAdresse(putClientRequest.getAdressePostale());
+        client.setTelephone(putClientRequest.getTelephone());
+        this.clientRepository.save(client);
+        return buildPutClientResponse(client);
     }
 
     private PutClientResponse buildPutClientResponse(ClientEntity clientSave) {
