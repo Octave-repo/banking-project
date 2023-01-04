@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpServerErrorException;
 
+//TODO Gérer les exceptions !
 @RestController
 @RequestMapping("clients")
 public class ClientController {

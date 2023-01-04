@@ -2,14 +2,24 @@ package fr.banking.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
-//@Entity
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class VirementEntity{
-    private CompteEntity receveur;
+    @Id
+    @GeneratedValue
+    private long id;
+
+    private Timestamp dateCreation;
+    //Un virement est composé de 2 transactions
+    @OneToOne
+    private TransactionEntity transactionEmmeteur;
+    @OneToOne
+    private TransactionEntity transactionRecepteur;
 }
