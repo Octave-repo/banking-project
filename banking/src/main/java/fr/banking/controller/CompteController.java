@@ -5,6 +5,7 @@ import fr.banking.services.CompteService;
 import fr.banking.services.dto.compte.PostCardRequest;
 import fr.banking.services.dto.compte.PostCompteRequest;
 import fr.banking.services.dto.compte.PostCompteResponses;
+import fr.banking.services.dto.compte.PostPaiementRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,12 @@ public class CompteController {
     @PostMapping("/{iban}/cartes")
     private ResponseEntity createCarte(@PathVariable String iban, @RequestBody PostCardRequest postCardRequest){
         return ResponseEntity.created(null).body(this.compteService.createCarte(iban, postCardRequest));
+    }
+
+    @PostMapping("/{iban}/cartes/{numeroCarte}/paiement")
+    private ResponseEntity paiementCarte(@PathVariable String iban, @PathVariable String numeroCarte,
+                                         @RequestBody PostPaiementRequest postPaiementRequest){
+        return ResponseEntity.created(null).body(this.compteService.paiementCarte(iban, numeroCarte, postPaiementRequest));
+
     }
 }

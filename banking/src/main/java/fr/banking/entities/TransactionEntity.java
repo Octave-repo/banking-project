@@ -11,12 +11,12 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class TransactionEntity {
     @Id
     @GeneratedValue
     private long id;
 
-    @NotBlank
     private String raison;
     @ManyToOne
     private CompteEntity emetteur;
@@ -24,8 +24,5 @@ public class TransactionEntity {
 
     private TypeTransaction typeTransaction;
     private TypeSource typeSource;
-    @NotBlank
     private Timestamp date;
-    @NotBlank
-    private Timestamp dateCreation;
 }

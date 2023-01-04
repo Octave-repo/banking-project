@@ -1,15 +1,17 @@
 package fr.banking.services;
 
-import fr.banking.entities.CarteEntity;
-import fr.banking.entities.ClientEntity;
-import fr.banking.entities.CompteEntity;
+import fr.banking.entities.*;
 import fr.banking.repository.CarteRepository;
 import fr.banking.repository.ClientRepository;
+import fr.banking.repository.TransactionRepository;
 import fr.banking.services.dto.compte.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import fr.banking.repository.CompteRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,8 @@ public class CompteService {
     private ClientRepository clientRepository;
     @Autowired
     private CarteRepository carteRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     public List<GetCompteResponses> getCompte (Long id){
         return this.compteRepository.findCompteEntityByClientsId(id)
@@ -73,12 +77,13 @@ public class CompteService {
     public PostCompteResponses postCompte (PostCompteRequest compteCreate){
         CompteEntity compteSave = this.compteRepository.save(CompteEntity.builder()
                 .iBAN(createIban())
-                .solde(0)
+                //On met un peu d'argent pour pouvoir faire des transactions
+                .solde(1000)
                 .intituleCompte(compteCreate.getIntituleCompte())
                 .typeCompte(compteCreate.getTypeCompte())
                 .clients(recupClient(compteCreate.getAllId())) //TODO Vérifier que les clients existent
                 .cartes(null)
-                .dateCreation(null)
+                .dateCreation(Timestamp.valueOf(LocalDateTime.now()))
                 .transactions(null)
                 .build());
         return buildPostCompte(this.compteRepository.save(compteSave));
@@ -137,6 +142,48 @@ public class CompteService {
                 .numeroCarte(carte.getCardNumber())
                 .dateExpiration(carte.getExpirationDate())
                 .titulaireCarte(carte.getCompte().getIBAN())
+                .build();
+    }
+
+    public PostPaiementResponse paiementCarte(String iban, String numeroCarte, PostPaiementRequest postPaiementRequest) {
+        CompteEntity compte = compteRepository.findCompteEntityByiBAN(iban);
+        CarteEntity carte = carteRepository.findCarteEntityByCardNumber(numeroCarte);
+        //TODO Gérer les erreurs en amont
+        if (postPaiementRequest.getMontant() <= 0)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le montant doit être supérieur à 0");
+        if (compte == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte non trouvé");
+        if (carte == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte carte non trouvé");
+        if (carte.getCompte().getIBAN().equals(iban)) {
+            if (compte.getSolde() >= postPaiementRequest.getMontant()) {
+                compte.setSolde(compte.getSolde() - postPaiementRequest.getMontant());
+                compteRepository.save(compte);
+                TransactionEntity transaction = TransactionEntity.builder()
+                        .valeur(postPaiementRequest.getMontant())
+                        .typeTransaction(TypeTransaction.DEBIT)
+                        .typeSource(TypeSource.CARTE)
+                        .emetteur(compte)
+                        .date(Timestamp.valueOf(LocalDateTime.now()))
+                        .build();
+                transactionRepository.save(transaction);
+                compte.getTransactions().add(transaction);
+                compteRepository.save(compte);
+                return buildPostPaiement(transaction);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solde insuffisant");
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carte non associée au compte");
+        }
+    }
+
+    private PostPaiementResponse buildPostPaiement(TransactionEntity transaction) {
+        return PostPaiementResponse.builder()
+                .idTransaction(transaction.getId())
+                .typeTransaction(transaction.getTypeTransaction())
+                .dateCreation(transaction.getDate())
+                .montant(transaction.getValeur())
                 .build();
     }
 }
