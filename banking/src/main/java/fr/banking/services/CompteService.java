@@ -83,7 +83,7 @@ public class CompteService {
     }
 
     public PostCompteResponses postCompte (PostCompteRequest compteCreate){
-        List<ClientEntity> listClient = recupClient(compteCreate.getAllId());//TODO : verifier si les id sont correct
+        List<ClientEntity> listClient = recupClient(compteCreate.getAllId());
         CompteEntity compteSave = this.compteRepository.save(CompteEntity.builder()
                 .iBAN(createIban())
                 //On met un peu d'argent pour pouvoir faire des transactions
