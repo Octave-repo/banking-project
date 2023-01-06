@@ -32,7 +32,11 @@ public class CompteService {
     private TransactionRepository transactionRepository;
 
     public List<GetCompteResponses> getCompte (Long id){
-        return this.compteRepository.findCompteEntityByClientsId(id)
+        List<CompteEntity> compte = this.compteRepository.findCompteEntityByClientsId(id);
+        if (compte.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte not found");
+        }
+        return compte
                 .stream()
                 .map(co -> GetCompteResponses.builder()
                         .Iban(co.getIBAN())
@@ -69,19 +73,24 @@ public class CompteService {
     private List<ClientEntity> recupClient (List<Long> listId){
         List<ClientEntity> listClient = new ArrayList<>();
         for (Long id :listId){
-            listClient.add(clientRepository.findClientEntityById(id));
+            ClientEntity client = this.clientRepository.findClientEntityById(id);
+            if (client == null){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client non trouvé");
+            }
+            listClient.add(client);
         }
         return listClient;
     }
 
     public PostCompteResponses postCompte (PostCompteRequest compteCreate){
+        List<ClientEntity> listClient = recupClient(compteCreate.getAllId());//TODO : verifier si les id sont correct
         CompteEntity compteSave = this.compteRepository.save(CompteEntity.builder()
                 .iBAN(createIban())
                 //On met un peu d'argent pour pouvoir faire des transactions
                 .solde(1000)
                 .intituleCompte(compteCreate.getIntituleCompte())
                 .typeCompte(compteCreate.getTypeCompte())
-                .clients(recupClient(compteCreate.getAllId())) //TODO Vérifier que les clients existent
+                .clients(listClient)
                 .cartes(null)
                 .dateCreation(Timestamp.valueOf(LocalDateTime.now()))
                 .transactions(null)
@@ -99,7 +108,14 @@ public class CompteService {
 
     public List<GetCardResponse> getCartes(String iban) {
         List<GetCardResponse> listCard=new ArrayList<>();
-        for (CarteEntity c:compteRepository.findCompteEntityByiBAN(iban).getCartes()){
+        CompteEntity compte = this.compteRepository.findCompteEntityByiBAN(iban);
+        if (compte == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte non trouvé");
+        }
+        for (CarteEntity c:compte.getCartes()){
+            if (c == null){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carte non trouvé");
+            }
             listCard.add(GetCardResponse.builder()
                     .numeroCarte(c.getCardNumber())
                     .dateExpiration(c.getExpirationDate())
@@ -122,6 +138,12 @@ public class CompteService {
 
     public PostCardResponse createCarte(String iban, PostCardRequest postCardRequest) {
         CompteEntity compte = compteRepository.findCompteEntityByiBAN(iban);
+        if (compte == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte non trouvé");
+        }
+        if (compte.getCartes().size() >= 2){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le comptes possède déjà 2 cartes");
+        }
         LocalDateTime now = LocalDateTime.now();
         CarteEntity carte = CarteEntity.builder()
                 //On génère le numéro de carte basé sur le moment de la création
@@ -148,13 +170,10 @@ public class CompteService {
     public PostPaiementResponse paiementCarte(String iban, String numeroCarte, PostPaiementRequest postPaiementRequest) {
         CompteEntity compte = compteRepository.findCompteEntityByiBAN(iban);
         CarteEntity carte = carteRepository.findCarteEntityByCardNumber(numeroCarte);
-        //TODO Gérer les erreurs en amont
-        if (postPaiementRequest.getMontant() <= 0)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le montant doit être supérieur à 0");
         if (compte == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte non trouvé");
         if (carte == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte carte non trouvé");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carte non trouvé");
         if (carte.getCompte().getIBAN().equals(iban)) {
             if (compte.getSolde() >= postPaiementRequest.getMontant()) {
                 compte.setSolde(compte.getSolde() - postPaiementRequest.getMontant());
