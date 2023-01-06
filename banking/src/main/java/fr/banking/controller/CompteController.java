@@ -30,7 +30,11 @@ public class CompteController {
             } catch (ResponseStatusException e) {
                 if (e.getStatus().equals(HttpStatus.NOT_FOUND)){
                     return  ResponseEntity.notFound().build();
-                } else{
+                }
+                if (e.getStatus().equals(HttpStatus.BAD_REQUEST)){
+                    return ResponseEntity.badRequest().body("Le client n'existe pas");
+                }
+                else{
                     return ResponseEntity.internalServerError().body("Une erreur interne a été rencontrée");
                 }
             } catch (Exception e){

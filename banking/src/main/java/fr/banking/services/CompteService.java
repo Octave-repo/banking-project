@@ -5,6 +5,7 @@ import fr.banking.repository.CarteRepository;
 import fr.banking.repository.ClientRepository;
 import fr.banking.repository.TransactionRepository;
 import fr.banking.services.dto.compte.*;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import fr.banking.repository.CompteRepository;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,9 +34,13 @@ public class CompteService {
     private TransactionRepository transactionRepository;
 
     public List<GetCompteResponses> getCompte (Long id){
-        List<CompteEntity> compte = this.compteRepository.findCompteEntityByClientsId(id);
+        ClientEntity clients = this.clientRepository.findClientEntityById(id);
+        if (clients == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client non trouvé");
+        }
+        List<CompteEntity> compte = clients.getComptes();
         if (compte.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte non trouvé");
         }
         return compte
                 .stream()
@@ -43,12 +49,10 @@ public class CompteService {
                         .solde(co.getSolde())
                         .intituleCompte(co.getIntituleCompte())
                         .typeCompte(co.getTypeCompte())
-                        .titulairesCompte(co.getClients().stream().map(client ->
-                                        GetCompteResponses.GetCompteClientResponses
-                                                .builder()
-                                                .idClient(client.getId())
-                                                .build())
-                                .collect(Collectors.toList()))
+                        .titulairesCompte(co.getClients().stream()
+                                .map(client -> GetCompteResponses.GetCompteClientResponses.builder()
+                                        .idClient(client.getId())
+                                        .build()).collect(Collectors.toList()))
                         .transactions(co.getTransactions().stream()
                                 .map(tr -> GetCompteResponses.GetTransictionResponses.builder()
                                         .id(tr.getId())
@@ -84,7 +88,7 @@ public class CompteService {
 
     public PostCompteResponses postCompte (PostCompteRequest compteCreate){
         List<ClientEntity> listClient = recupClient(compteCreate.getAllId());
-        CompteEntity compteSave = this.compteRepository.save(CompteEntity.builder()
+        CompteEntity compteSave = CompteEntity.builder()
                 .iBAN(createIban())
                 //On met un peu d'argent pour pouvoir faire des transactions
                 .solde(1000)
@@ -94,8 +98,13 @@ public class CompteService {
                 .cartes(null)
                 .dateCreation(Timestamp.valueOf(LocalDateTime.now()))
                 .transactions(null)
-                .build());
-        return buildPostCompte(this.compteRepository.save(compteSave));
+                .build();
+        this.compteRepository.save(compteSave);
+        for (ClientEntity client : listClient){
+            client.getComptes().add(compteSave);
+            this.clientRepository.save(client);
+        }
+        return buildPostCompte(compteSave);
     }
 
     public List<GetCompteResponses.GetCompteClientResponses> getAllIdClients(CompteEntity compte) {
