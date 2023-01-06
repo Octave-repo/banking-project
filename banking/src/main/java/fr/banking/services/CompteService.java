@@ -151,7 +151,7 @@ public class CompteService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compte non trouvé");
         }
         if (compte.getCartes().size() >= 2){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le comptes possède déjà 2 cartes");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le compte possède déjà 2 cartes");
         }
         LocalDateTime now = LocalDateTime.now();
         CarteEntity carte = CarteEntity.builder()
